@@ -14,6 +14,7 @@
 ## Installation
 
 This project is developed for a Windows environment. FFmpeg must be installed. Please install CUDA 12.X + CUDNN 9.X versions. 
+
 Just download [AniTTS-Builder-One-Click](https://github.com/N01N9/AniTTS-Builder-One-Click/archive/refs/heads/main.zip) and unzip it. Then, run the batch file.
 
 ## Usage
