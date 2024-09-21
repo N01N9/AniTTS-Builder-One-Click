@@ -31,7 +31,7 @@ To run this program, you will need an .mp4 file of an anime featuring the charac
 
 ## References
 
-- (https://github.com/nomadkaraoke/python-audio-separator)
+- https://github.com/nomadkaraoke/python-audio-separator
 - (https://github.com/speechbrain/speechbrain)
 - (https://github.com/N01N9/AniTTS-Builder-No-UI)
 - (https://github.com/N01N9/AniTTS-Builder-webUI)
