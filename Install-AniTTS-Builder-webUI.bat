@@ -33,6 +33,49 @@ echo GIT_DL_DST: %GIT_DL_DST%
 echo REPO_URL: %REPO_URL%
 echo --------------------------------------------------
 
+@REM Checking CUDA, cuDNN, FFmpeg is installed...
+echo --------------------------------------------------
+echo Checking if CUDA 12.1 is installed...
+echo --------------------------------------------------
+nvcc --version | findstr "release 12.1"
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] CUDA 12.1 is not installed or not configured correctly.
+    pause
+    exit /b 1
+) else (
+    echo CUDA 12.1 is installed.
+)
+
+echo --------------------------------------------------
+echo Checking if cuDNN 9.x is installed...
+echo --------------------------------------------------
+if exist "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include\cudnn_version.h" (
+    findstr "CUDNN_MAJOR 9" "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include\cudnn_version.h"
+    if %ERRORLEVEL% neq 0 (
+        echo [ERROR] cuDNN 9.x is not installed or the version is incorrect.
+        pause
+        exit /b 1
+    ) else (
+        echo cuDNN 9.x is installed.
+    )
+) else (
+    echo [ERROR] cuDNN is not found in the default installation path.
+    pause
+    exit /b 1
+)
+
+echo --------------------------------------------------
+echo Checking FFmpeg installation...
+echo --------------------------------------------------
+ffmpeg -version
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] FFmpeg is not installed.
+    pause
+    exit /b 1
+) else (
+    echo FFmpeg is installed.
+)
+
 echo --------------------------------------------------
 echo Checking Git Installation...
 echo --------------------------------------------------
