@@ -158,10 +158,13 @@ if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
 
 @REM Install dependencies
 echo --------------------------------------------------
-echo Installing dependencies...
+echo Installing pytorch...
 echo --------------------------------------------------
 pip install pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu121
 if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
+
+echo Installing dependencies...
+echo --------------------------------------------------
 pip install -r requirements.txt --no-deps
 if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
 
