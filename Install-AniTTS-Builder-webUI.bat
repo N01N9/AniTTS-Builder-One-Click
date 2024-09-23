@@ -13,13 +13,12 @@ set REPO_URL=https://github.com/N01N9/AniTTS-Builder-webUI.git
 set GIT_URL=https://github.com/git-for-windows/git/releases/download/v2.44.0.windows.1/PortableGit-2.44.0-64-bit.7z.exe
 set GIT_DST=%~dp0lib\PortableGit-2.44.0-64-bit.7z.exe
 
-@REM Python download URL
-set PYTHON_URL=https://www.python.org/ftp/python/3.10.11/python-3.10.11-embed-amd64.zip
+@REM Miniconda download URL
+set MINICONDA_URL=https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe
+set MINICONDA_INSTALLER=%~dp0MinicondaInstaller.exe
 
-@REM Define paths: Python and Git to be installed in lib folder
+@REM Define paths: Git to be installed in lib folder
 set LIB_DIR=%~dp0lib
-set PYTHON_DIR=%LIB_DIR%\python
-set VENV_DIR=%~dp0venv
 
 @REM CUDA, cuDNN, FFmpeg 설치 확인
 echo --------------------------------------------------
@@ -64,6 +63,46 @@ if %ERRORLEVEL% neq 0 (
     echo FFmpeg is installed.
 )
 
+@REM Check if Conda is installed, if not, download and install Miniconda
+echo --------------------------------------------------
+echo Checking for Conda installation...
+echo --------------------------------------------------
+conda --version
+if %ERRORLEVEL% neq 0 (
+    echo Conda is not installed. Downloading Miniconda...
+    
+    if not exist "%CURL_CMD%" (
+        echo [ERROR] %CURL_CMD% not found. Please ensure curl is installed.
+        pause & exit /b 1
+    )
+
+    echo Downloading Miniconda installer...
+    curl -L %MINICONDA_URL% -o %MINICONDA_INSTALLER%
+    if %ERRORLEVEL% neq 0 (
+        echo [ERROR] Failed to download Miniconda installer.
+        pause & exit /b 1
+    )
+
+    echo Installing Miniconda...
+    start /wait "" "%MINICONDA_INSTALLER%" /InstallationType=JustMe /AddToPath=1 /S
+    if %ERRORLEVEL% neq 0 (
+        echo [ERROR] Miniconda installation failed.
+        pause & exit /b 1
+    )
+
+    echo Miniconda installed successfully. Deleting installer...
+    del %MINICONDA_INSTALLER%
+    
+    echo Verifying Conda installation...
+    conda --version
+    if %ERRORLEVEL% neq 0 (
+        echo [ERROR] Conda installation verification failed.
+        pause & exit /b 1
+    )
+) else (
+    echo Conda is already installed.
+)
+
 @REM Check for Git installation
 echo --------------------------------------------------
 echo Checking Git Installation...
@@ -98,39 +137,6 @@ if !errorlevel! neq 0 (
     if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
 )
 
-@REM Check for Python 3.10 and install if necessary
-echo --------------------------------------------------
-echo Checking Python 3.10...
-echo --------------------------------------------------
-if not exist "%PYTHON_DIR%" (
-    echo Python 3.10 is not installed. Downloading...
-    curl -o python.zip %PYTHON_URL%
-    if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
-
-    echo Extracting Python...
-    %PS_CMD% Expand-Archive -Path python.zip -DestinationPath "%PYTHON_DIR%"
-    if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
-
-    echo Removing python.zip...
-    del python.zip
-
-    echo Enabling 'site' module in Python...
-    %PS_CMD% "&{(Get-Content '%PYTHON_DIR%\python310._pth') -creplace '#import site', 'import site' | Set-Content '%PYTHON_DIR%\python310._pth' }"
-    if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
-    
-    echo Downloading get-pip.py...
-    curl -o "%PYTHON_DIR%\get-pip.py" https://bootstrap.pypa.io/get-pip.py
-    if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
-
-    echo Installing pip...
-    "%PYTHON_DIR%\python.exe" "%PYTHON_DIR%\get-pip.py" --no-warn-script-location
-    if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
-
-    echo Installing virtualenv...
-    "%PYTHON_DIR%\python.exe" -m pip install virtualenv --no-warn-script-location
-    if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
-)
-
 @REM Clone the Git repository
 echo --------------------------------------------------
 echo Cloning the repository...
@@ -141,31 +147,18 @@ if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
 @REM Move into the cloned project folder (assumed to be named AniTTS-Builder-webUI)
 cd AniTTS-Builder-webUI
 
-@REM Create virtual environment inside the cloned project folder
+@REM Install dependencies using Conda
 echo --------------------------------------------------
-echo Creating virtual environment inside the project folder...
+echo Installing dependencies with Conda...
 echo --------------------------------------------------
-set VENV_DIR=%CD%\venv
-"%PYTHON_DIR%\python.exe" -m virtualenv --copies "%VENV_DIR%"
+conda env create -f AniTTS_Builder_webUI_env.yaml
 if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
 
-@REM Activate virtual environment and install packages
+@REM Activate Conda environment
 echo --------------------------------------------------
-echo Activating virtual environment...
+echo Activating Conda environment...
 echo --------------------------------------------------
-call "%VENV_DIR%\Scripts\activate.bat"
-if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
-
-@REM Install dependencies
-echo --------------------------------------------------
-echo Installing pytorch...
-echo --------------------------------------------------
-pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu121
-if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
-
-echo Installing dependencies...
-echo --------------------------------------------------
-pip install -r requirements.txt --no-deps
+conda activate AniTTS_Builder_webUI_env
 if !errorlevel! neq 0 ( pause & exit /b !errorlevel! )
 
 echo --------------------------------------------------
