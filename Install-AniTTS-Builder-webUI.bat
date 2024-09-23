@@ -37,44 +37,31 @@ echo --------------------------------------------------
 echo --------------------------------------------------
 echo Checking if CUDA 12.1 is installed...
 echo --------------------------------------------------
-nvcc --version | findstr "release 12.1"
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] CUDA 12.1 is not installed or not configured correctly.
-    pause
-    exit /b 1
-) else (
-    echo CUDA 12.1 is installed.
-)
+where nvcc >nul 2>&1
+( if %ERRORLEVEL% neq 0 ( echo CUDA is not installed or not in the system PATH. & echo Please install CUDA 12.1 and ensure it is added to the PATH. & pause & exit /b 1 ) )
+nvcc --version | findstr "release 12.1" >nul 2>&1
+( if %ERRORLEVEL% neq 0 ( echo CUDA version is not 12.1. & echo Please install or configure CUDA 12.1 correctly and try again. & pause & exit /b 1 ) )
+echo CUDA 12.1 is installed.
 
 echo --------------------------------------------------
 echo Checking if cuDNN 9.x is installed...
 echo --------------------------------------------------
-if exist "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include\cudnn_version.h" (
-    findstr "CUDNN_MAJOR 9" "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include\cudnn_version.h"
-    if %ERRORLEVEL% neq 0 (
-        echo [ERROR] cuDNN 9.x is not installed or the version is incorrect.
-        pause
-        exit /b 1
-    ) else (
-        echo cuDNN 9.x is installed.
-    )
-) else (
-    echo [ERROR] cuDNN is not found in the default installation path.
-    pause
-    exit /b 1
-)
+where cudnn_version.h >nul 2>&1
+( if %ERRORLEVEL% neq 0 ( echo cuDNN is not installed or not found. & echo Please ensure cuDNN is installed in the correct location. & pause & exit /b 1 ) )
+findstr "CUDNN_MAJOR 9" "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include\cudnn_version.h" >nul 2>&1
+( if %ERRORLEVEL% neq 0 ( echo cuDNN 9.x is not installed or the version is incorrect. & echo Please install the correct version of cuDNN 9.x and try again. & pause & exit /b 1 ) )
+echo cuDNN 9.x is installed.
 
 echo --------------------------------------------------
 echo Checking FFmpeg installation...
 echo --------------------------------------------------
-ffmpeg -version
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] FFmpeg is not installed.
-    pause
-    exit /b 1
-) else (
-    echo FFmpeg is installed.
-)
+where ffmpeg >nul 2>&1
+( if %ERRORLEVEL% neq 0 ( echo FFmpeg is not installed or not in the system PATH. & echo Please install FFmpeg and ensure it is added to the PATH. & pause & exit /b 1 ) )
+echo FFmpeg is installed.
+
+echo --------------------------------------------------
+echo All necessary tools are installed.
+pause
 
 echo --------------------------------------------------
 echo Checking Git Installation...
