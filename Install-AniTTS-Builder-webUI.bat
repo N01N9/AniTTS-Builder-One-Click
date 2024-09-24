@@ -16,6 +16,10 @@ REM Miniconda download URL and destination path
 set CONDA_DL_URL=https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe
 set CONDA_DL_DST=%~dp0lib\Miniconda3-latest-Windows-x86_64.exe
 
+REM FFmpeg download URL and destination path
+set FFMPEG_DL_URL=https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
+set FFMPEG_DL_DST=%~dp0lib\ffmpeg-release-essentials.zip
+
 REM Repository URL to clone
 set REPO_URL=https://github.com/N01N9/AniTTS-Builder-webUI.git
 
@@ -56,7 +60,25 @@ echo --------------------------------------------------
 echo Checking FFmpeg installation...
 echo --------------------------------------------------
 where ffmpeg >nul 2>&1
-( if %ERRORLEVEL% neq 0 ( echo FFmpeg is not installed or not in the system PATH. & echo Please install FFmpeg and ensure it is added to the PATH. & pause & exit /b 1 ) )
+if !errorlevel! neq 0 (
+    echo FFmpeg is not installed. Downloading FFmpeg...
+    curl -L %FFMPEG_DL_URL% -o "%FFMPEG_DL_DST%"
+    if !errorlevel! neq 0 ( echo Failed to download FFmpeg. Exiting... & pause & exit /b 1 )
+
+    echo Extracting FFmpeg...
+    powershell -command "Expand-Archive -Path %FFMPEG_DL_DST% -DestinationPath %~dp0lib\ffmpeg"
+    if !errorlevel! neq 0 ( echo Failed to extract FFmpeg. Exiting... & pause & exit /b 1 )
+
+    echo Removing FFmpeg archive...
+    del "%FFMPEG_DL_DST%"
+
+    echo Adding FFmpeg to PATH...
+    set "PATH=%~dp0lib\ffmpeg\ffmpeg-release-essentials\bin;%PATH%"
+    if !errorlevel! neq 0 ( echo Failed to set PATH. Exiting... & pause & exit /b 1 )
+
+    where ffmpeg
+    if !errorlevel! neq 0 ( echo FFmpeg installation failed. Exiting... & pause & exit /b 1 )
+)
 echo FFmpeg is installed.
 
 echo --------------------------------------------------
@@ -131,6 +153,5 @@ if exist "%REPO_DIR%\AniTTS-Builder-env.yaml" (
 )
 
 pause
-popd
 popd
 endlocal
