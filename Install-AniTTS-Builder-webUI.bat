@@ -132,11 +132,8 @@ if exist "%ffmpeg_dir%" (
 
     REM Add FFmpeg to PATH
     set "ffmpeg_bin_path=%ffmpeg_dir%\ffmpeg-release-essentials\bin"
-    setx PATH "%ffmpeg_bin_path%;%PATH%"
-    if %errorlevel% neq 0 ( pause & popd & exit /b %errorlevel% )
-    set PATH "%ffmpeg_bin_path%;%PATH%"
-    if %errorlevel% neq 0 ( pause & popd & exit /b %errorlevel% )
-    echo FFmpeg installation completed. 
+
+    echo FFmpeg installation completed.
 )
 
 if exist "%INSTALL_PATH%" (
@@ -171,8 +168,6 @@ if exist "%INSTALL_PATH%" (
     echo Setting up PATH environment variable for Miniconda...
     echo --------------------------------------------------
     set "PATH=%INSTALL_PATH%;%INSTALL_PATH%\Scripts;%INSTALL_PATH%\Library\bin;%PATH%"
-    if %errorlevel% neq 0 ( pause & popd & exit /b %errorlevel% )
-    setx PATH "%INSTALL_PATH%;%INSTALL_PATH%\Scripts;%INSTALL_PATH%\Library\bin;%PATH%"
     if %errorlevel% neq 0 ( pause & popd & exit /b %errorlevel% )
 
     REM Conda initialization (through shell configuration) 
