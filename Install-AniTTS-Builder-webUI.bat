@@ -199,7 +199,7 @@ REM Clone the repository
 echo --------------------------------------------------
 echo Cloning repository...
 echo --------------------------------------------------
-git clone https://github.com/SUC-DriverOld/MSST-WebUI "./module"
+git clone https://github.com/SUC-DriverOld/MSST-WebUI "./module/MSST-WebUI"
 if %errorlevel% neq 0 ( pause & popd & exit /b 1 )
 
 REM Activate the virtual environment
