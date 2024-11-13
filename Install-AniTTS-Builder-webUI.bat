@@ -133,8 +133,10 @@ if exist "%ffmpeg_dir%" (
     REM Add FFmpeg to PATH
     set "ffmpeg_bin_path=%ffmpeg_dir%\ffmpeg-release-essentials\bin"
     setx PATH "%ffmpeg_bin_path%;%PATH%"
-
-    echo FFmpeg installation completed. Please open a new command prompt to use FFmpeg.
+    if %errorlevel% neq 0 ( pause & popd & exit /b %errorlevel% )
+    set PATH "%ffmpeg_bin_path%;%PATH%"
+    if %errorlevel% neq 0 ( pause & popd & exit /b %errorlevel% )
+    echo FFmpeg installation completed. 
 )
 
 if exist "%INSTALL_PATH%" (
@@ -199,7 +201,7 @@ REM Clone the repository
 echo --------------------------------------------------
 echo Cloning repository...
 echo --------------------------------------------------
-git clone https://github.com/SUC-DriverOld/MSST-WebUI "./module/MSST-WebUI"
+git clone https://github.com/SUC-DriverOld/MSST-WebUI "./module/MSST_WebUI"
 if %errorlevel% neq 0 ( pause & popd & exit /b 1 )
 
 REM Activate the virtual environment
@@ -227,7 +229,7 @@ pip install -r requirements.txt --only-binary=samplerate
 if %errorlevel% neq 0 ( pause & popd & exit /b 1 )
 pip uninstall librosa -y
 if %errorlevel% neq 0 ( pause & popd & exit /b 1 )
-pip install "module/MSST-WebUI/tools/webUI_for_clouds/librosa-0.9.2-py3-none-any.whl
+pip install "module/MSST_WebUI/tools/webUI_for_clouds/librosa-0.9.2-py3-none-any.whl
 if %errorlevel% neq 0 ( pause & popd & exit /b 1 )
 
 REM Start MSST-WebUI model download and initialize
