@@ -234,6 +234,14 @@ echo ----------------------------------------
 python initialize.py
 if %errorlevel% neq 0 ( pause & popd & exit /b 1 )
 
+REM logger switch
+set A_FILE="./logger.py"
+set B_FILE="./module/MSST_WebUI/utils/logger.py"
+
+REM a파일을 b파일로 이동하며 원본 삭제
+move /y %A_FILE% %B_FILE%
+if %errorlevel% neq 0 ( pause & popd & exit /b 1 )
+
 echo ----------------------------------------
 echo Model download is complete. Start AniTTS-Builder-webUI.
 echo ----------------------------------------
